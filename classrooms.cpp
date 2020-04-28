@@ -23,11 +23,10 @@ int main() {
 		p = make_pair(activityStart, activityEnd);
 		activities.push_back(p);
 	}
-
+	
 	// CALCULATING MAX # ACTIVITIES TO BE HELD
-	int count;  // count of number activities to be held (maximize this)
+	int count=0;  // count of number activities to be held (maximize this)
 	pair<int,int> last (-1,-1);  // last activity to be scheduled
-	int used = 0;  // number of classrooms used
 	if (numActivities == numClassrooms) count = numActivities;
 	else {
 		sort(activities.begin(), activities.end(), compare_finishing);
