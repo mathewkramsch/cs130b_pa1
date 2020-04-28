@@ -28,15 +28,13 @@ int main() {
 	int count=0;  // count of number activities to be held (maximize this)
 	pair<int,int> last (-1,-1);  // last activity to be scheduled
 	if (numActivities == numClassrooms) count = numActivities;
-	else {
-		sort(activities.begin(), activities.end(), compare_finishing);
-			// sort by finishing time
-		// iterate thru activities, schedule earlier elements first (unless conflict)
+	else {  // iterate thru activities, schedule earlier elements first (unless conflict)
+		sort(activities.begin(), activities.end(), compare_finishing);  // sort by finishing time
 		for (int i=0; i<numClassrooms; i++) {  // do this for each classroom
 			last = activities[0];
 			activities.erase(activities.begin());
 			count++;
-			for (int i=1; i<numActivities; i++) {
+			for (int i=0; i<activities.size(); i++) {
 				if (activities[i].first > last.second) {  // if != conflict w/ last scheduled activity
 					last = activities[i];
 					activities.erase(activities.begin()+i);
