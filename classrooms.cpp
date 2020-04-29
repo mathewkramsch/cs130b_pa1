@@ -29,28 +29,30 @@ int main() {
 	}
 	
 	// CALCULATING MAX # ACTIVITIES TO BE HELD
-	multiset<int> earliest_ending;  // keeps track of earliest ending time of scheduled activities accross classrooms
+	multiset<int> endtimes;  // keeps track of ending times of scheduled activities accross classrooms
 		// add new activity to classroom w/ latest ending time
 	int count=0;  // count of number activities to be held (maximize this)
-	pair<int,int> last (-1,-1);  // last activity to be scheduled
 	if (numActivities == numClassrooms) { count = numActivities; cout << count << endl; return 0; }
 
 	// iterate thru activities, schedule earlier finishing elements first (unless conflict)
 	sort(activities.begin(), activities.end(), compare_finishing);  // sort by finishing time
+
 	for (int i=0; i<activities.size(); i++) {
-		if (earliest_ending.size() < numClassrooms) {
-			earliest_ending.insert(activities[i].second);
+		// if an activity has been scheduled
+		// and if this's starting time > the scheduled activity's ending time that is earliest
+		if (!endtimes.empty() && activities[i].first > *(endtimes.begin())) {
+			// then add it to lower bound (scheduled activity that ends the latest but is still compatible)
+			// aka the maximum ending time < activities[i]'s starting time
+			auto it = --endtimes.lower_bound(activities[i].first);
+			endtimes.erase(it);
+			endtimes.insert(activities[i].second);
+			count++;
+		}  // else if none scheduled yet, or none are compatible and you can still add a classroom
+		else if (endtimes.size() < numClassrooms) {  // if there are classrooms available
+			endtimes.insert(activities[i].second);
 			count++;
 		}
-		else {  // if != conflict w/ earliest ending scheduled activity
-			if (activities[i].first <= *(earliest_ending.begin())) continue;
-			
-			// it = the max ending time < activities[i]'s starting time
-			auto it = --earliest_ending.lower_bound(activities[i].first);
-			earliest_ending.erase(it);
-			earliest_ending.insert(activities[i].second);
-			count++;
-		}
+
 	}
 
 	cout << count << endl;
