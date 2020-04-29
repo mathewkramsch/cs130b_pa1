@@ -1,7 +1,6 @@
 // classrooms.cpp
 
 #include <iostream>
-#include <set>
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -29,27 +28,24 @@ int main() {
 	}
 	
 	// CALCULATING MAX # ACTIVITIES TO BE HELD
-	multiset<int> earliest_ending;  // keeps track of earliest ending time of scheduled activities accross classrooms
-		// add new activity to classroom w/ latest ending time
 	int count=0;  // count of number activities to be held (maximize this)
 	pair<int,int> last (-1,-1);  // last activity to be scheduled
-	if (numActivities == numClassrooms) { count = numActivities; cout << count << endl; return 0; }
-
-	// iterate thru activities, schedule earlier finishing elements first (unless conflict)
-	sort(activities.begin(), activities.end(), compare_finishing);  // sort by finishing time
-	for (int i=0; i<activities.size(); i++) {
-		if (earliest_ending.size() < numClassrooms) {
-			earliest_ending.insert(activities[i].second);
+	if (numActivities == numClassrooms) count = numActivities;
+	else {  // iterate thru activities, schedule earlier finishing elements first (unless conflict)
+		sort(activities.begin(), activities.end(), compare_finishing);  // sort by finishing time
+		for (int i=0; i<numClassrooms; i++) {  // do this for each classroom
+			if (activities.empty()) break;
+			last = activities[0];
+			activities.erase(activities.begin());
 			count++;
-		}
-		else {  // if != conflict w/ earliest ending scheduled activity
-			if (activities[i].first <= *(earliest_ending.begin())) continue;
-			
-			// it = the max ending time < activities[i]'s starting time
-			auto it = --earliest_ending.lower_bound(activities[i].first);
-			earliest_ending.erase(it);
-			earliest_ending.insert(activities[i].second);
-			count++;
+			for (int i=0; i<activities.size(); i++) {
+				if (activities[i].first > last.second) {  // if != conflict w/ last scheduled activity
+					last = activities[i];
+					activities.erase(activities.begin()+i);
+					i--;  // bc index erased, to prevent from skipping next activity
+					count++;
+				}
+			}
 		}
 	}
 
